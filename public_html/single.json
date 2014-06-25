@@ -1,0 +1,20 @@
+{
+    "bild": "images/Explosionszeichnung_final.gif",
+    "name": "Minarelli liegend",
+    "kurz": "MA",
+    "zuordnungen": [{
+            "x": "50",
+            "y": "32",
+            "w": "60",
+            "h": "35",
+            "baugruppe": "C",
+            "einzelteil": "01"
+        }, {
+            "x": "50",
+            "y": "243",
+            "w": "59",
+            "h": "31",
+            "baugruppe": "C",
+            "einzelteil": "02"
+        }]
+}
