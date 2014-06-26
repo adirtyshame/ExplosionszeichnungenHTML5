@@ -25,6 +25,11 @@ function MotorViewModel(data) {
 //    };
 //    return map;
 }
+
+function MotorenViewModel(data) {
+    this.name = ko.observable(data.name);
+    this.kurz = ko.observable(data.kurz);
+}
 //var model = new MotorViewModel();
 //ko.applyBindings(new MotorViewModel());
 //console.log(model.zuordnungen.length);
