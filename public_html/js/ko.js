@@ -12,24 +12,30 @@ function ZuordnungViewModel(baugruppe, einzelteil, x, y, width, height) {
 //    return map;
 //}
 
-function MotorViewModel(data) {
+function MotorViewModel(bild, name, kurz) {
     var self = this;
-    self.bild = ko.observable(data.bild);
-    self.name = ko.observable(data.name);
-    self.kurz = ko.observable(data.kurz);
-    self.zuordnungen = ko.observableArray(data.zuordnungen);
+    self.bild = ko.observable(bild);
+    self.name = ko.observable(name);
+    self.kurz = ko.observable(kurz);
+    self.zuordnungen = ko.observableArray();
 //    var map = ko.mapping.fromJSON(data);
     
-//    map.addZuordnung = function(baugruppe, einzelteil) {
-//        map.zuordnungen.push(new ZuordnungViewModel(baugruppe, einzelteil, 20, 20, 60, 30));
-//    };
-//    return map;
+    self.addZuordnung = function(baugruppe, einzelteil, x, y, width, height) {
+        self.zuordnungen.push(new ZuordnungViewModel(baugruppe, einzelteil, x, y, width, height));
+    };
+    self.selectedZuordnung = ko.observable();
 }
 
 function MotorenViewModel(data) {
     this.name = ko.observable(data.name);
     this.kurz = ko.observable(data.kurz);
 }
+
+function Explosionszeichnungen() {
+    var self = this;
+    self.motoren = ko.observableArray();
+    self.selectedMotor = ko.observable();
+};
 //var model = new MotorViewModel();
 //ko.applyBindings(new MotorViewModel());
 //console.log(model.zuordnungen.length);

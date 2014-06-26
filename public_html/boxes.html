@@ -17,8 +17,34 @@ and open the template in the editor.
         <script src="js/ko.js" type="text/javascript"></script>
         <script src="js/boxes.js" type="text/javascript"></script>
         <script>
-            var SELECT_URL = 'http://localhost:9080/select.php';
-            var ENGINES_URL = 'http://localhost:9080/engines/select.php';
+            var SELECT_URL = 'http://explodedview.scooter-attack.com/select.php';
+            var ENGINES_URL = 'http://explodedview.scooter-attack.com/engines/select.php';
+            
+//            $('#laden').click(function() {
+//                fetchData();
+//            });
+            var model = null;
+            var ez = null;
+//            var motoren = null;
+            function fetchData() {
+                $.get(SELECT_URL, function(data) {
+                    ez = new Explosionszeichnungen();
+                    $.each($.parseJSON(data), function(index, value) {
+                        var motor = new MotorViewModel(value.bild, value.name, value.kurz);
+                        $.each(value.zuordnungen, function(i, v){
+                            motor.zuordnungen.push(new ZuordnungViewModel(v.baugruppe, v.einzelteil, v.x, v.y, v.width, v.height));
+                        });
+                        ez.motoren.push(motor);
+                    });
+                    ko.applyBindings(ez);
+                });
+            };
+//            function fetchMotoren() {
+//                $.get(ENGINES_URL, function(data) {
+//                    motoren = new MotorenViewModel(data);
+//                    ko.applyBindings(motoren, document.getElementById('motor'));
+//                });
+//            };
         </script>
         <style type="text/css">
             body { margin: 0; }
@@ -29,7 +55,7 @@ and open the template in the editor.
             footer {position: fixed; bottom: 0px; background-color: azure; width: 100%; padding: 10px;}
         </style>
     </head>
-    <body>
+    <body onload="fetchData();">
         <section>
             <canvas id="canvas" height="300" width="400">TODO write content</canvas>
             <button onclick="init('images/Explosionszeichnung_final.gif');">load Image</button>
@@ -38,9 +64,9 @@ and open the template in the editor.
             <section id="selects">
                 <form name="myform">
 
-                    <div>
+<!--                    <div>
                         <input type="button" id="laden" value="aus Datei Laden"/>
-                    </div>
+                    </div>-->
 
                     <div>
                         <table>
@@ -50,23 +76,28 @@ and open the template in the editor.
                                     <select id="motor" 
                                             name="master0" 
                                             size="5" 
-                                            data-bind="foreach: motoren">
-                                        <option data-bind="value: $data.kurz, text: $data.name"></option>
+                                            data-bind="foreach: motoren()">
+                                        <option data-bind="value: $index, text: name()"></option>
                                     </select>
                                 </td>
                             </tr>
                         </table>
                     </div>
 
-                    <div>
+                    <div data-bind="visible: selectedMotor">
                         <table>
                             <caption>Gruppe</caption>
                             <tr>
                                 <td colspan="2">
-                                    <select id="gruppe" 
+<!--                                    <select id="gruppe" 
                                             name="master1" 
                                             size="5"
-                                            data-bind="options: zuordnungen"></select>
+                                            data-bind="options: selectedMotor.zuordnungen,
+                                                        optionsText: 'baugruppe'+'einzelteil',
+                                                        optionsValue: ''"></select>-->
+<!--                                    <ul data-bind="foreach: selectedMotor().zuordnungen">
+                                        <li data-bind="value: baugruppe"></li>
+                                    </ul>-->
                                 </td>
                             </tr>
                             <tr>
@@ -88,25 +119,5 @@ and open the template in the editor.
                 </form>
             </section>
         </footer>
-        <script>
-            $('#laden').click(function() {
-                fetchMotoren();
-            });
-            var model = null;
-            var motoren = null;
-            function fetchData() {
-                $.get(SELECT_URL + "?motor=MA", function(data) {
-                    model = new MotorViewModel(data);
-                    ko.applyBindings(model);
-                });
-            };
-            var model = null;
-            function fetchMotoren() {
-                $.get(ENGINES_URL, function(data) {
-                    motoren = new MotorenViewModel(data);
-                    ko.applyBindings(motoren, document.getElementById('motor'));
-                });
-            };
-        </script>
     </body>
 </html>
