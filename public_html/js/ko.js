@@ -20,8 +20,7 @@ function Motor() {
         return item.motor() + item.baugruppe() + item.einzelteil();
     };
     self.click = function() {
-//        init(self.bild());
-        alert(self.selectedZuordnung().einzelteil());
+        invalidate();
     };
 }
 

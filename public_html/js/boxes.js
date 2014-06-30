@@ -127,16 +127,15 @@ function draw() {
         // draw all motor.zuordnungen()
         var l = motor.zuordnungen().length;
         for (var i = 0; i < l; i++) {
-            drawshape(ctx, motor.zuordnungen()[i]);
             ctx.font = textFont;
             ctx.fillStyle = textColor;
-            ctx.fillText(motor.zuordnungen()[i].motor() + motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x+2, motor.zuordnungen()[i].y + 20);
+            ctx.fillText(motor.zuordnungen()[i].motor() + motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x()+2, motor.zuordnungen()[i].y() + 20);
+            drawshape(ctx, motor.zuordnungen()[i]);
         }
 
         // draw selection
         // right now this is just a stroke along the edge of the selected box
         if (motor.selectedZuordnung() != null) {
-            console.log('draw selected ',motor.selectedZuordnung());
             ctx.strokeStyle = mySelColor;
             ctx.lineWidth = mySelWidth;
             ctx.strokeRect(motor.selectedZuordnung().x(), 
