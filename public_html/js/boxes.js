@@ -13,26 +13,11 @@ function Box() {
     this.h = 1;
     this.fill = 'rgba(2,165,165,0.7)';
     this.motor = '';
-    this.gruppe = '';
-    this.teil = '';
-}
-
-//Initialize a new Box, add it, and invalidate the canvas
-function addRect(motor, gruppe, teil, x, y, w, h) {
-    var rect = new Box;
-    rect.x = x | 20;
-    rect.y = y | 20;
-    rect.w = w | 60;
-    rect.h = h | 30;
-    rect.motor = motor;
-    rect.gruppe = gruppe;
-    rect.teil = teil;
-    boxes.push(rect);
-    invalidate();
+    this.baugruppe = '';
+    this.einzelteil = '';
 }
 
 // holds all our rectangles
-var boxes = [];
 
 var canvas;
 var image;
@@ -90,6 +75,7 @@ function init(imagePath) {
         gctx = ghostcanvas.getContext('2d');
         // make draw() fire every INTERVAL milliseconds
         setInterval(draw, INTERVAL);
+        invalidate();
     };
 
     //fixes a problem where double clicking causes text to get selected on the canvas
@@ -108,7 +94,7 @@ function init(imagePath) {
 
 
     // set our events. Up and down are for dragging,
-    // double click is for making new boxes
+    // double click is for making new motor.zuordnungen()
     canvas.onmousedown = myDown;
     canvas.onmouseup = myUp;
 //    canvas.ondblclick = myDblClick;
@@ -116,10 +102,10 @@ function init(imagePath) {
     // add custom initialization here:
 
     // add an orange rectangle
-    addRect('MA', 'C', '01');
+//    addRect('MA', 'C', '01');
 
     // add a smaller blue rectangle
-    addRect('MA', 'C', '02');
+//    addRect('MA', 'C', '02');
 }
 
 //wipes the canvas context
@@ -138,21 +124,25 @@ function draw() {
             ctx.drawImage(image, 0, 0);
         }
 
-        // draw all boxes
-        var l = boxes.length;
+        // draw all motor.zuordnungen()
+        var l = motor.zuordnungen().length;
         for (var i = 0; i < l; i++) {
-            drawshape(ctx, boxes[i], boxes[i].fill);
+            drawshape(ctx, motor.zuordnungen()[i]);
             ctx.font = textFont;
             ctx.fillStyle = textColor;
-            ctx.fillText(boxes[i].motor + boxes[i].gruppe + boxes[i].teil, boxes[i].x+2, boxes[i].y + 20);
+            ctx.fillText(motor.zuordnungen()[i].motor() + motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x+2, motor.zuordnungen()[i].y + 20);
         }
 
         // draw selection
         // right now this is just a stroke along the edge of the selected box
-        if (mySel != null) {
+        if (motor.selectedZuordnung() != null) {
+            console.log('draw selected ',motor.selectedZuordnung());
             ctx.strokeStyle = mySelColor;
             ctx.lineWidth = mySelWidth;
-            ctx.strokeRect(mySel.x, mySel.y, mySel.w, mySel.h);
+            ctx.strokeRect(motor.selectedZuordnung().x(), 
+                           motor.selectedZuordnung().y(), 
+                           motor.selectedZuordnung().width(), 
+                           motor.selectedZuordnung().height());
         }
 
         // Add stuff you want drawn on top all the time here
@@ -165,16 +155,16 @@ function draw() {
 // Draws a single shape to a single context
 // draw() will call this with the normal canvas
 // myDown will call this with the ghost canvas
-function drawshape(context, shape, fill) {
-    context.fillStyle = fill;
+function drawshape(context, shape) {
+    context.fillStyle = 'rgba(2,165,165,0.7)';
 
     // We can skip the drawing of elements that have moved off the screen:
-    if (shape.x > WIDTH || shape.y > HEIGHT)
+    if (shape.x() > WIDTH || shape.y() > HEIGHT)
         return;
-    if (shape.x + shape.w < 0 || shape.y + shape.h < 0)
+    if (shape.x() + shape.width() < 0 || shape.y() + shape.height() < 0)
         return;
 
-    context.fillRect(shape.x, shape.y, shape.w, shape.h);
+    context.fillRect(shape.x(), shape.y(), shape.width(), shape.height());
 }
 
 // Happens when the mouse is moving inside the canvas
@@ -195,10 +185,10 @@ function myMove(e) {
 function myDown(e) {
     getMouse(e);
     clear(gctx);
-    var l = boxes.length;
+    var l = motor.zuordnungen().length;
     for (var i = l - 1; i >= 0; i--) {
         // draw shape onto ghost context
-        drawshape(gctx, boxes[i], 'black');
+        drawshape(gctx, motor.zuordnungen()[i], 'black');
 
         // get image data at the mouse x,y pixel
         var imageData = gctx.getImageData(mx, my, 1, 1);
@@ -206,7 +196,7 @@ function myDown(e) {
 
         // if the mouse pixel exists, select and break
         if (imageData.data[3] > 0) {
-            mySel = boxes[i];
+            mySel = motor.zuordnungen()[i];
             offsetx = mx - mySel.x;
             offsety = my - mySel.y;
             mySel.x = mx - offsetx;

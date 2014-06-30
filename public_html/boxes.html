@@ -17,34 +17,40 @@ and open the template in the editor.
         <script src="js/ko.js" type="text/javascript"></script>
         <script src="js/boxes.js" type="text/javascript"></script>
         <script>
-            var SELECT_URL = 'http://explodedview.scooter-attack.com/select.php';
+            var SELECT_URL = 'http://explodedview.scooter-attack.com/select.php?motortyp=';
             var ENGINES_URL = 'http://explodedview.scooter-attack.com/engines/select.php';
-            
-//            $('#laden').click(function() {
-//                fetchData();
-//            });
-            var model = null;
-            var ez = null;
-//            var motoren = null;
-            function fetchData() {
-                $.get(SELECT_URL, function(data) {
-                    ez = new Explosionszeichnungen();
-                    $.each($.parseJSON(data), function(index, value) {
-                        var motor = new MotorViewModel(value.bild, value.name, value.kurz);
-                        $.each(value.zuordnungen, function(i, v){
-                            motor.zuordnungen.push(new ZuordnungViewModel(v.baugruppe, v.einzelteil, v.x, v.y, v.width, v.height));
-                        });
-                        ez.motoren.push(motor);
+
+            var motor = new Motor();
+            var motortypen = new MotorTypen();
+            function ladeMotor(typ) {
+                ko.cleanNode(document.getElementById('gruppe'));
+                motor = null;
+                motor = new Motor();
+                $.get(SELECT_URL + typ, function(data) {
+//                    console.log(JSON.parse(data));
+                    motor.name(JSON.parse(data).name);
+                    motor.kurz(JSON.parse(data).kurz);
+                    motor.bild(JSON.parse(data).bild);
+                    motor.zuordnungen.removeAll();
+                    $.each(JSON.parse(data).zuordnungen, function(i, v) {
+                        motor.zuordnungen.push(new Zuordnung(motor.kurz(), v.baugruppe, v.einzelteil, v.x, v.y, v.width, v.height));
                     });
-                    ko.applyBindings(ez);
+//                    motor.zuordnungen.sort(function(left, right) {
+//                        return left.bezeichnung == right.bezeichnung ? 0 : (left.bezeichnung < right.bezeichnung ? -1 : 1)
+//                    });
+                    ko.applyBindings(motor, document.getElementById('gruppe'));
+                    init(motor.bild());
                 });
-            };
-//            function fetchMotoren() {
-//                $.get(ENGINES_URL, function(data) {
-//                    motoren = new MotorenViewModel(data);
-//                    ko.applyBindings(motoren, document.getElementById('motor'));
-//                });
-//            };
+            }
+            function ladeMotorTypen() {
+                $.get(ENGINES_URL, function(data) {
+                    $.each(JSON.parse(data), function(i, v) {
+                        motortypen.motortypen.push(new Motortyp(v));
+                    });
+                    ko.applyBindings(motortypen, document.getElementById('motor'));
+                });
+            }
+            ;
         </script>
         <style type="text/css">
             body { margin: 0; }
@@ -55,7 +61,7 @@ and open the template in the editor.
             footer {position: fixed; bottom: 0px; background-color: azure; width: 100%; padding: 10px;}
         </style>
     </head>
-    <body onload="fetchData();">
+    <body onload="ladeMotorTypen();">
         <section>
             <canvas id="canvas" height="300" width="400">TODO write content</canvas>
             <button onclick="init('images/Explosionszeichnung_final.gif');">load Image</button>
@@ -64,9 +70,9 @@ and open the template in the editor.
             <section id="selects">
                 <form name="myform">
 
-<!--                    <div>
-                        <input type="button" id="laden" value="aus Datei Laden"/>
-                    </div>-->
+                    <!--                    <div>
+                                            <input type="button" id="laden" value="aus Datei Laden"/>
+                                        </div>-->
 
                     <div>
                         <table>
@@ -76,28 +82,29 @@ and open the template in the editor.
                                     <select id="motor" 
                                             name="master0" 
                                             size="5" 
-                                            data-bind="foreach: motoren()">
-                                        <option data-bind="value: $index, text: name()"></option>
+                                            data-bind="click: click,
+                                                        value: selectedTyp,
+                                                        options: motortypen,
+                                                        optionsText: bezeichnung">
                                     </select>
                                 </td>
                             </tr>
                         </table>
                     </div>
 
-                    <div data-bind="visible: selectedMotor">
+                    <div>
                         <table>
                             <caption>Gruppe</caption>
                             <tr>
                                 <td colspan="2">
-<!--                                    <select id="gruppe" 
+                                    <select id="gruppe" 
                                             name="master1" 
                                             size="5"
-                                            data-bind="options: selectedMotor.zuordnungen,
-                                                        optionsText: 'baugruppe'+'einzelteil',
-                                                        optionsValue: ''"></select>-->
-<!--                                    <ul data-bind="foreach: selectedMotor().zuordnungen">
-                                        <li data-bind="value: baugruppe"></li>
-                                    </ul>-->
+                                            data-bind="click: click,
+                                                        value: selectedZuordnung,
+                                                        options: zuordnungen,
+                                                        optionsText: bezeichnung">
+                                    </select>
                                 </td>
                             </tr>
                             <tr>

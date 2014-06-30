@@ -1,41 +1,45 @@
-function ZuordnungViewModel(baugruppe, einzelteil, x, y, width, height) {
-    this.x = ko.observable(x);
-    this.y = ko.observable(y);
-    this.width = ko.observable(width);
-    this.height = ko.observable(height);
-    this.baugruppe = ko.observable(baugruppe);
-    this.einzelteil = ko.observable(einzelteil);
+function Zuordnung(motor, baugruppe, einzelteil, x, y, width, height) {
+    var self = this;
+    self.x = ko.observable(x);
+    self.y = ko.observable(y);
+    self.width = ko.observable(width);
+    self.height = ko.observable(height);
+    self.baugruppe = ko.observable(baugruppe);
+    self.einzelteil = ko.observable(einzelteil);
+    self.motor = ko.observable(motor);
 }
 
-//function ZuordnungViewModel(data) {
-//    var map = ko.mapping.fromJSON(data);
-//    return map;
-//}
-
-function MotorViewModel(bild, name, kurz) {
+function Motor() {
     var self = this;
-    self.bild = ko.observable(bild);
-    self.name = ko.observable(name);
-    self.kurz = ko.observable(kurz);
+    self.bild = ko.observable('');
+    self.name = ko.observable('');
+    self.kurz = ko.observable('');
     self.zuordnungen = ko.observableArray();
-//    var map = ko.mapping.fromJSON(data);
-    
-    self.addZuordnung = function(baugruppe, einzelteil, x, y, width, height) {
-        self.zuordnungen.push(new ZuordnungViewModel(baugruppe, einzelteil, x, y, width, height));
-    };
     self.selectedZuordnung = ko.observable();
+    self.bezeichnung = function(item) {
+        return item.motor() + item.baugruppe() + item.einzelteil();
+    };
+    self.click = function() {
+//        init(self.bild());
+        alert(self.selectedZuordnung().einzelteil());
+    };
 }
 
-function MotorenViewModel(data) {
-    this.name = ko.observable(data.name);
-    this.kurz = ko.observable(data.kurz);
-}
-
-function Explosionszeichnungen() {
+function Motortyp(data) {
     var self = this;
-    self.motoren = ko.observableArray();
-    self.selectedMotor = ko.observable();
-};
-//var model = new MotorViewModel();
-//ko.applyBindings(new MotorViewModel());
-//console.log(model.zuordnungen.length);
+    self.name = ko.observable(data.name);
+    self.kurz = ko.observable(data.kurz);
+    self.bild = ko.observable(data.bild);
+}
+
+function MotorTypen() {
+    var self = this;
+    self.motortypen = ko.observableArray();
+    self.selectedTyp = ko.observable();
+    self.click = function() {
+        ladeMotor(self.selectedTyp().kurz());
+    };
+    self.bezeichnung = function(item) {
+        return item.kurz() + ', ' + item.name();
+    };
+}
