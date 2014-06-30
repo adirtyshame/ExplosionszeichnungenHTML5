@@ -6,16 +6,16 @@
 // So long as you are nice to people, etc
 
 //Box object to hold data for all drawn rects
-function Box() {
-    this.x = 0;
-    this.y = 0;
-    this.w = 1; // default width and height?
-    this.h = 1;
-    this.fill = 'rgba(2,165,165,0.7)';
-    this.motor = '';
-    this.baugruppe = '';
-    this.einzelteil = '';
-}
+//function Box() {
+//    this.x = 0;
+//    this.y = 0;
+//    this.w = 1; // default width and height?
+//    this.h = 1;
+//    this.fill = 'rgba(2,165,165,0.7)';
+//    this.motor = '';
+//    this.baugruppe = '';
+//    this.einzelteil = '';
+//}
 
 // holds all our rectangles
 
@@ -97,15 +97,9 @@ function init(imagePath) {
     // double click is for making new motor.zuordnungen()
     canvas.onmousedown = myDown;
     canvas.onmouseup = myUp;
-//    canvas.ondblclick = myDblClick;
 
     // add custom initialization here:
-
-    // add an orange rectangle
-//    addRect('MA', 'C', '01');
-
-    // add a smaller blue rectangle
-//    addRect('MA', 'C', '02');
+    
 }
 
 //wipes the canvas context
@@ -125,13 +119,17 @@ function draw() {
         }
 
         // draw all motor.zuordnungen()
-        var l = motor.zuordnungen().length;
-        for (var i = 0; i < l; i++) {
+        ko.utils.arrayForEach(motor.zuordnungen(), function(item){
             ctx.font = textFont;
             ctx.fillStyle = textColor;
-            ctx.fillText(motor.zuordnungen()[i].motor() + motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x()+2, motor.zuordnungen()[i].y() + 20);
-            drawshape(ctx, motor.zuordnungen()[i]);
-        }
+            var text = item.motor() 
+                        + item.baugruppe() 
+                        + item.einzelteil();
+            ctx.fillText(text, 
+                        item.x() + 2, 
+                        item.y() + 20);
+            drawshape(ctx, item);
+        });
 
         // draw selection
         // right now this is just a stroke along the edge of the selected box
@@ -187,7 +185,7 @@ function myDown(e) {
     var l = motor.zuordnungen().length;
     for (var i = l - 1; i >= 0; i--) {
         // draw shape onto ghost context
-        drawshape(gctx, motor.zuordnungen()[i], 'black');
+        drawshape(gctx, motor.zuordnungen()[i]);
 
         // get image data at the mouse x,y pixel
         var imageData = gctx.getImageData(mx, my, 1, 1);
@@ -226,16 +224,6 @@ function myUp() {
     }
     isDrag = false;
     canvas.onmousemove = null;
-}
-
-// adds a new node
-function myDblClick(e) {
-    getMouse(e);
-    // for this method width and height determine the starting X and Y, too.
-    // so I left them as vars in case someone wanted to make them args for something and copy this code
-    var width = 20;
-    var height = 20;
-    addRect(mx - (width / 2), my - (height / 2), width, height, '#77DD44');
 }
 
 function invalidate() {
