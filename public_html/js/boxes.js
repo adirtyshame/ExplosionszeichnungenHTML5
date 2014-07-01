@@ -6,16 +6,16 @@
 // So long as you are nice to people, etc
 
 //Box object to hold data for all drawn rects
-function Box() {
-    this.x = 0;
-    this.y = 0;
-    this.w = 1; // default width and height?
-    this.h = 1;
-    this.fill = 'rgba(2,165,165,0.7)';
-    this.motor = '';
-    this.baugruppe = '';
-    this.einzelteil = '';
-}
+//function Box() {
+//    this.x = 0;
+//    this.y = 0;
+//    this.w = 1; // default width and height?
+//    this.h = 1;
+//    this.fill = 'rgba(2,165,165,0.7)';
+//    this.motor = '';
+//    this.baugruppe = '';
+//    this.einzelteil = '';
+//}
 
 // holds all our rectangles
 
@@ -97,15 +97,9 @@ function init(imagePath) {
     // double click is for making new motor.zuordnungen()
     canvas.onmousedown = myDown;
     canvas.onmouseup = myUp;
-//    canvas.ondblclick = myDblClick;
 
     // add custom initialization here:
-
-    // add an orange rectangle
-//    addRect('MA', 'C', '01');
-
-    // add a smaller blue rectangle
-//    addRect('MA', 'C', '02');
+    
 }
 
 //wipes the canvas context
@@ -226,16 +220,6 @@ function myUp() {
     }
     isDrag = false;
     canvas.onmousemove = null;
-}
-
-// adds a new node
-function myDblClick(e) {
-    getMouse(e);
-    // for this method width and height determine the starting X and Y, too.
-    // so I left them as vars in case someone wanted to make them args for something and copy this code
-    var width = 20;
-    var height = 20;
-    addRect(mx - (width / 2), my - (height / 2), width, height, '#77DD44');
 }
 
 function invalidate() {
