@@ -5,17 +5,6 @@
 // Free to use and distribute at will
 // So long as you are nice to people, etc
 
-//Box object to hold data for all drawn rects
-//function Box() {
-//    this.x = 0;
-//    this.y = 0;
-//    this.w = 1; // default width and height?
-//    this.h = 1;
-//    this.fill = 'rgba(2,165,165,0.7)';
-//    this.motor = '';
-//    this.baugruppe = '';
-//    this.einzelteil = '';
-//}
 
 // holds all our rectangles
 
