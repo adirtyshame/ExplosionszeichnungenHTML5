@@ -7,6 +7,15 @@ function Zuordnung(motor, baugruppe, einzelteil, x, y, width, height) {
     self.baugruppe = ko.observable(baugruppe);
     self.einzelteil = ko.observable(einzelteil);
     self.motor = ko.observable(motor);
+    self.alternativ = ko.observableArray([]);
+    self.ersatz = ko.observableArray([]);
+    self.tuning = ko.observableArray([]);
+    self.selectedAlternativ = ko.observable();
+    self.selectedErsatz = ko.observable();
+    self.selectedTuning = ko.observable();
+    self.neuAlternativ = ko.observable('');
+    self.neuErsatz = ko.observable('');
+    self.neuTuning = ko.observable('');
 }
 
 function Motor() {

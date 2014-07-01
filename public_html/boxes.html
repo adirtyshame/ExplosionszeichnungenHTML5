@@ -26,7 +26,18 @@
                     motor.bild(JSON.parse(data).bild);
                     motor.zuordnungen.removeAll();
                     $.each(JSON.parse(data).zuordnungen, function(i, v) {
-                        motor.zuordnungen.push(new Zuordnung(motor.kurz(), v.baugruppe, v.einzelteil, v.x, v.y, v.w, v.h));
+                        var zuordnung = new Zuordnung(motor.kurz(), v.baugruppe, v.einzelteil, v.x, v.y, v.w, v.h);
+                        motor.zuordnungen.push(zuordnung);
+                        // TODO Json kommt noch
+//                        $.each(v.alternativ, function(i, v){
+//                            zuordnung.alternativ.push(v);
+//                        });
+//                        $.each(v.ersatz, function(i, v){
+//                            zuordnung.ersatz.push(v);
+//                        });
+//                        $.each(v.tuning, function(i, v){
+//                            zuordnung.tuning.push(v);
+//                        });
                     });
                     ko.applyBindings(motor, document.getElementById('gruppe'));
                     init(motor.bild());
@@ -43,8 +54,9 @@
                         motortypen.selectedTyp(motortypen.motortypen()[0]);
                     }
                 });
-            };
-            
+            }
+            ;
+
         </script>
         <style type="text/css">
             body { margin: 0; }
@@ -83,29 +95,114 @@
 
                     <div>
                         <table id="gruppe">
-                            <caption>Gruppe</caption>
                             <tr>
-                                <td colspan="2">
-                                    <select name="master1" 
-                                            size="5"
-                                            data-bind="click: click,
+                                <td>
+                                    <table>
+                                        <caption>Gruppe</caption>
+                                        <tr>
+                                            <td colspan="2">
+                                                <select size="5"
+                                                        data-bind="click: click,
                                                         value: selectedZuordnung,
                                                         options: zuordnungen,
                                                         optionsText: bezeichnung">
-                                    </select>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="gruppeText" value="" placeholder="Gruppenname"/>
+                                            </td>
+                                            <td>
+                                                <input type="button" id="add" value="hinzufügen" data-bind="click: addZuordnung"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input disabled="disabled" type="button" id="removeGruppe" value="Gruppe entfernen" data-bind="enable: motor.selectedZuordnung, click: removeZuordnung"/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>
-                                    <input type="text" id="gruppeText" value="" placeholder="Gruppenname"/>
+                                    <table>
+                                        <caption>Alternativ</caption>
+                                        <tr>
+                                            <td colspan="2">
+                                                <select size="5"
+                                                        data-bind="value: selectedZuordnung.selectedAlternativ,
+                                                        options: selectedZuordnung.alternativ">
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="alternativText" value="" placeholder="Artikelnummer" data-bind="value: selectedZuordnung.neuAlternativ"/>
+                                            </td>
+                                            <td>
+                                                <input type="button" id="add" value="hinzufügen" data-bind=""/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input disabled="disabled" type="button" id="removeAlternativ" value="Alternativ entfernen" data-bind="enable: selectedZuordnung.selectedAlternativ"/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                                 <td>
-                                    <input type="button" id="add" value="hinzufügen" data-bind="click: addZuordnung"/>
+                                    <table>
+                                        <caption>Ersatz</caption>
+                                        <tr>
+                                            <td colspan="2">
+                                                <select size="5"
+                                                        data-bind="value: selectedZuordnung.selectedErsatz,
+                                                        options: selectedZuordnung.ersatz">
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="ersatzText" value="" placeholder="Artikelnummer" data-bind="value: selectedZuordnung.neuErsatz"/>
+                                            </td>
+                                            <td>
+                                                <input type="button" id="add" value="hinzufügen" data-bind=""/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input disabled="disabled" type="button" id="removeErsatz" value="Ersatz entfernen" data-bind="enable: selectedZuordnung.selectedErsatz"/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <input disabled="disabled" type="button" id="removeGruppe" value="Gruppe entfernen" data-bind="enable: motor.selectedZuordnung, click: removeZuordnung"/>
+                                <td>
+                                    <table>
+                                        <caption>Tuning</caption>
+                                        <tr>
+                                            <td colspan="2">
+                                                <select name="master1" 
+                                                        size="5"
+                                                        data-bind="value: motor.selectedZuordnung.selectedTuning,
+                                                        options: motor.selectedZuordnung.tuning">
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="tuningText" placeholder="Artikelnummer" data-bind="value: motor.selectedZuordnung.neuTuning"/>
+                                            </td>
+                                            <td>
+                                                <input type="button" id="add" value="hinzufügen" data-bind=""/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input disabled="disabled" type="button" id="removeTuning" value="Tuning entfernen" 
+                                                       data-bind=""/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
