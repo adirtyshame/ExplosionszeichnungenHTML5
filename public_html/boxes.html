@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-
-
--->
 <html>
     <head>
         <title>Explosionszeichnungen</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="js/libs/jquery/jquery.min.js" type="text/javascript"></script>
+        <script src="js/libs/jquery/jquery.maskedinput.min.js" type="text/javascript"></script>
         <script src="js/libs/knockout/knockout-min.js" type="text/javascript"></script>
         <script src="js/libs/knockout.mapping/knockout.mapping.js" type="text/javascript"></script>
         <script src="js/ko.js" type="text/javascript"></script>
@@ -27,20 +21,17 @@ and open the template in the editor.
                 motor = null;
                 motor = new Motor();
                 $.get(SELECT_URL + typ, function(data) {
-//                    console.log(JSON.parse(data));
                     motor.name(JSON.parse(data).name);
                     motor.kurz(JSON.parse(data).kurz);
                     motor.bild(JSON.parse(data).bild);
                     motor.zuordnungen.removeAll();
                     $.each(JSON.parse(data).zuordnungen, function(i, v) {
-                        motor.zuordnungen.push(new Zuordnung(motor.kurz(), v.baugruppe, v.einzelteil, v.x, v.y, v.width, v.height));
+                        motor.zuordnungen.push(new Zuordnung(motor.kurz(), v.baugruppe, v.einzelteil, v.x, v.y, v.w, v.h));
                     });
-//                    motor.zuordnungen.sort(function(left, right) {
-//                        return left.bezeichnung == right.bezeichnung ? 0 : (left.bezeichnung < right.bezeichnung ? -1 : 1)
-//                    });
                     ko.applyBindings(motor, document.getElementById('gruppe'));
                     init(motor.bild());
                 });
+                $('#gruppeText').mask('a-99');
             }
             function ladeMotorTypen() {
                 $.get(ENGINES_URL, function(data) {
@@ -48,9 +39,12 @@ and open the template in the editor.
                         motortypen.motortypen.push(new Motortyp(v));
                     });
                     ko.applyBindings(motortypen, document.getElementById('motor'));
+                    if (motortypen.motortypen().length > 0) {
+                        motortypen.selectedTyp(motortypen.motortypen()[0]);
+                    }
                 });
-            }
-            ;
+            };
+            
         </script>
         <style type="text/css">
             body { margin: 0; }
@@ -70,17 +64,12 @@ and open the template in the editor.
             <section id="selects">
                 <form name="myform">
 
-                    <!--                    <div>
-                                            <input type="button" id="laden" value="aus Datei Laden"/>
-                                        </div>-->
-
                     <div>
-                        <table>
+                        <table id="motor">
                             <caption>Motor</caption>
                             <tr>
                                 <td>
-                                    <select id="motor" 
-                                            name="master0" 
+                                    <select name="master0" 
                                             size="5" 
                                             data-bind="click: click,
                                                         value: selectedTyp,
@@ -93,12 +82,11 @@ and open the template in the editor.
                     </div>
 
                     <div>
-                        <table>
+                        <table id="gruppe">
                             <caption>Gruppe</caption>
                             <tr>
                                 <td colspan="2">
-                                    <select id="gruppe" 
-                                            name="master1" 
+                                    <select name="master1" 
                                             size="5"
                                             data-bind="click: click,
                                                         value: selectedZuordnung,
@@ -109,15 +97,15 @@ and open the template in the editor.
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" id="gruppeText" value="" placeholder="Gruppenname" />
+                                    <input type="text" id="gruppeText" value="" placeholder="Gruppenname"/>
                                 </td>
                                 <td>
-                                    <input type="button" id="add" value="hinzufügen"/>
+                                    <input type="button" id="add" value="hinzufügen" data-bind="click: addZuordnung"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <input disabled="disabled" type="button" id="removeGruppe" value="Gruppe(n) entfernen"/>
+                                    <input disabled="disabled" type="button" id="removeGruppe" value="Gruppe entfernen" data-bind="enable: motor.selectedZuordnung, click: removeZuordnung"/>
                                 </td>
                             </tr>
                         </table>

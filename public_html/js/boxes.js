@@ -127,10 +127,10 @@ function draw() {
         // draw all motor.zuordnungen()
         var l = motor.zuordnungen().length;
         for (var i = 0; i < l; i++) {
+            drawshape(ctx, motor.zuordnungen()[i]);
             ctx.font = textFont;
             ctx.fillStyle = textColor;
-            ctx.fillText(motor.zuordnungen()[i].motor() + motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x()+2, motor.zuordnungen()[i].y() + 20);
-            drawshape(ctx, motor.zuordnungen()[i]);
+            ctx.fillText(motor.zuordnungen()[i].baugruppe() + motor.zuordnungen()[i].einzelteil(), motor.zuordnungen()[i].x(), motor.zuordnungen()[i].y()-2);
         }
 
         // draw selection
@@ -172,8 +172,8 @@ function myMove(e) {
         $('#canvas').css({cursor: 'none'});
         getMouse(e);
 
-        mySel.x = mx - offsetx;
-        mySel.y = my - offsety;
+        mySel.x(mx - offsetx);
+        mySel.y(my - offsety);
 
         // something is changing position so we better invalidate the canvas!
         invalidate();
@@ -187,8 +187,7 @@ function myDown(e) {
     var l = motor.zuordnungen().length;
     for (var i = l - 1; i >= 0; i--) {
         // draw shape onto ghost context
-        drawshape(gctx, motor.zuordnungen()[i], 'black');
-
+        drawshape(gctx, motor.zuordnungen()[i]);
         // get image data at the mouse x,y pixel
         var imageData = gctx.getImageData(mx, my, 1, 1);
         var index = (mx + my * imageData.width) * 4;
@@ -196,10 +195,11 @@ function myDown(e) {
         // if the mouse pixel exists, select and break
         if (imageData.data[3] > 0) {
             mySel = motor.zuordnungen()[i];
-            offsetx = mx - mySel.x;
-            offsety = my - mySel.y;
-            mySel.x = mx - offsetx;
-            mySel.y = my - offsety;
+            offsetx = mx - mySel.x();
+            offsety = my - mySel.y();
+            mySel.x(mx - offsetx);
+            mySel.y(my - offsety);
+            motor.selectedZuordnung(mySel);
             isDrag = true;
             canvas.onmousemove = myMove;
             invalidate();
@@ -219,9 +219,9 @@ function myDown(e) {
 function myUp() {
     if (isDrag) {
         // TODO push selected box
-//        $.get('http://explodedview.scooter-attack.com/insert.php?baugruppe='+mySel.gruppe+'&einzelteil='+mySel.teil+'&motortyp='+mySel.motor+'&x='+mySel.x+'&y='+mySel.y+'&w='+mySel.w+'&h='+mySel.h, function(date){
-//            console.log('Zuordnung aktualisiert: ',mySel);
-//        });
+        var url = 'http://explodedview.scooter-attack.com/insert.php?baugruppe='+mySel.baugruppe()+'&einzelteil='+mySel.einzelteil()+'&motortyp='+mySel.motor()+'&x='+mySel.x()+'&y='+mySel.y()+'&w='+mySel.width()+'&h='+mySel.height();
+        $.get(url, function(data){
+        });
         $('#canvas').css({cursor: 'default'});
     }
     isDrag = false;

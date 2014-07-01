@@ -17,11 +17,30 @@ function Motor() {
     self.zuordnungen = ko.observableArray();
     self.selectedZuordnung = ko.observable();
     self.bezeichnung = function(item) {
-        return item.motor() + item.baugruppe() + item.einzelteil();
+        return item.baugruppe() + item.einzelteil();
     };
     self.click = function() {
         invalidate();
     };
+    self.addZuordnung = function() {
+        if ($('#gruppeText').val().length == 0) {
+            return;
+        }
+        var res = $('#gruppeText').val().toUpperCase().split('-');
+
+        var test = new Zuordnung(self.kurz(), res[0], res[1], 20, 20, 60, 30);
+        self.zuordnungen.push(test);
+        self.selectedZuordnung(test);
+        $('#gruppeText').val('')
+        invalidate();
+    }
+    self.removeZuordnung = function() {
+        var url = 'http://explodedview.scooter-attack.com/delete.php?baugruppe=' + self.selectedZuordnung().baugruppe() + '&einzelteil=' + self.selectedZuordnung().einzelteil() + '&motortyp=' + self.selectedZuordnung().motor();
+        $.get(url, function(data) {
+            self.zuordnungen.remove(self.selectedZuordnung());
+            invalidate();
+        });
+    }
 }
 
 function Motortyp(data) {
