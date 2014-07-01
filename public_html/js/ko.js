@@ -16,6 +16,19 @@ function Zuordnung(motor, baugruppe, einzelteil, x, y, width, height) {
     self.neuAlternativ = ko.observable('');
     self.neuErsatz = ko.observable('');
     self.neuTuning = ko.observable('');
+    self.addAlternativ = function() {
+        self.alternativ.push(self.neuAlternativ);
+        invalidate();
+    }
+    self.addErsatz = function() {
+        self.ersatz.push(self.neuErsatz);
+        invalidate();
+    }
+    self.addTuning = function() {
+        console.log('BÄM!',self.neuTuning);
+        self.tuning.push(self.neuTuning);
+        invalidate();
+    }
 }
 
 function Motor() {
